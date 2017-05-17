@@ -1,0 +1,409 @@
+\documentclass[10pt]{beamer}
+\setbeamertemplate{bibliography item}[triangle]
+
+\usetheme{metropolis}
+\usepackage{appendixnumberbeamer}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+
+\usepackage{pgfplots}
+\usepgfplotslibrary{dateplot}
+\input{pack}
+\usepackage{xspace}
+\newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
+
+\title{A Generalized Reduced Linear Program for Markov Decision Processes}
+%\subtitle{APU}
+\date{\today}
+\author{Chandrashekar Lakshminarayanan}
+\institute{Reinforcement Learning \& Artificial Intelligence Group,\\University of Alberta}
+% \titlegraphic{\hfill\includegraphics[height=1.5cm]{logo.pdf}}
+
+\begin{document}
+
+\maketitle
+%\begin{frame}{Overview}
+%  \setbeamertemplate{section in toc}[sections numbeorange]
+%  \tableofcontents[hideallsubsections]
+%\end{frame}
+
+
+
+\begin{frame}[fragile]{Sequential Decisions under Uncertainty: Complex Systems}
+$\mbox{ }$
+\includegraphics[scale=0.125]{atari.jpg}
+$\mbox{ }$
+\includegraphics[scale=0.125]{queues1.jpg}
+$\mbox{ }$
+\includegraphics[scale=0.125]{robosoc.jpg}
+$\mbox{ }$$\mbox{ }$
+\includegraphics[scale=0.125]{invent.jpeg}
+$\mbox{ }$\\
+$\mbox{ }$
+\quad Atari\quad\quad\quad\quad
+$\mbox{ }$
+Queues\quad\quad\quad\quad
+$\mbox{ }$
+Robosoccer\quad\quad
+$\mbox{ }$
+Inventory
+$\mbox{ }$\\
+\quad\quad\quad\quad\quad\quad\quad
+\quad\quad\quad\quad\quad\quad\quad
+\quad\quad\quad\quad\quad\quad\quad
+\quad\quad\quad
+Control
+\begin{block}{}
+Markov decision processes (MDPs) is useful to model these problems
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Setup}
+\begin{itemize}
+\item Discrete-Time, Discounted, Infinite Horizon MDPs
+\item Controller: steers the stochastically evolving state; receives rewards
+\item Policy: Controller using past state information
+\end{itemize}
+\begin{block}{Planning Problem}
+\begin{itemize}
+\item Calculate actions of policies that give rise to high values
+\item New Error bounds on the quality of solutions obtained by solving linear programs of tractable size
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Challenges}
+\begin{itemize}
+\item Model is given then computations are $poly(|\S|,|\A|)$
+\item $|\S|$ grows exponentially
+\item Hard even when fixed per-state calculations are allowed
+\item Modest Goal: Best from a suitable class
+\end{itemize}
+\begin{block}{Value Function approximation}
+\begin{itemize}
+\item Linear parameterization
+\item $\epsilon$ optimal value lead to $\epsilon$ optimal policy
+\end{itemize}
+\end{block}
+\begin{block}{Question}
+Can we bound value error?
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Contributions}
+\begin{block}{Main Result}
+\begin{itemize}
+\item New sub-optimality bound for constraint reduction in approximate linear programming
+\item Recommendation for constraint selection
+\end{itemize}
+\end{block}
+\begin{block}{Key Ingredients}
+\begin{itemize}
+\item Based on `Geometric' Structure of linear programs
+\item Novel Contraction maps
+\end{itemize}
+\end{block}
+\begin{block}{Prior Work}
+\begin{itemize}
+\item Suffers from distribution mismatch
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\section{Problem Setup}
+
+\begin{frame}[fragile]{Markov Decision Process (MDP)}
+
+\begin{block}{MDP $\M=<\S,\A,P,g,\alpha>$}
+\begin{itemize}
+\item State space $\S=\{s^1,\ldots,s^{|\S|}\}$\p
+\item Action space $\A=\{a^1,\ldots,a^{|\A|}\}$\p
+\item Markovian Transition
+\begin{align*}
+Pr\{s_{t+1}=s'| s_t=s, a_t=a\}=p_a(s,s')
+\end{align*}\p
+\item Rewards $g_a(s)$ for action $a$ in state $s$\p
+\item Policy: $u\colon \S\ra \A$ (induces a Markov chain with kernel $P_u$)\p
+\item Value: $J_u(s)\eqdef \E\big[\sum_{t=0}^\infty \alpha^t g_{a_t}(s_t)|s_0=s,a_t=u(s_t)\big],\,\alpha\in (0,1)$\p
+\end{itemize}
+\end{block}
+\begin{block}{Aim for optimal}
+Compute  $J^*(s)=\max_{u} J(s),\,\forall s\in \S$ and $u^*$ s.t $J_{u^*}=J^*$
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Bellman Equation}
+
+\begin{block}{Bellman Equation}
+\begin{align*}
+J^*(s)&={\max_{a\in \A}} \alert<1>{g_a(s)}+{\alpha p_a(s,\cdot)^\top J^*}\\
+\end{align*}
+\end{block}
+\p
+\begin{block}{Values lead to Policy}
+\begin{align*}
+u^*(s)\eqdef \U(J^*)(s) ={\arg\max_{a\in \A}} (g_a(s)+\alpha p_a(s,\cdot)^\top J^*)
+\end{align*}
+\end{block}
+\normalsize
+\p
+\begin{block}{Bellman Operator- $T\colon \R^{|\S|}\ra \R^{|\S|}$}
+\begin{align*}
+(TJ)(s)&\eqdef\max_{a\in \A} g_a(s)+\alpha p_a(s,\cdot)^\top J\\
+J^*&=TJ^*
+\end{align*}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Definitions}
+\begin{block}{Norms}
+$\norm{\cdot}_{\infty,\psi}=\max_{s\in \S}\frac{(\cdot)(s) }{\psi(s)}$
+\end{block}
+
+
+\begin{block}{Superharomic}
+$f\in \R^{|\S|}$ is superharmonic to $g$ if $f\geq g$
+\end{block}
+
+
+\begin{block}{Maximal Inflation}
+$\psi>0\in \R^{|\S|}$ then
+\begin{align*}
+\beta_\psi=\max_{a\in \A}\frac{\alpha p_a(s,\cdot)^\top \psi}{\psi(s)}
+\end{align*}
+\end{block}
+
+\begin{block}{Lyapunov}
+$\psi$ is a Lyapunov function if $\beta_\psi<1$
+\end{block}
+
+
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Linear Programming}
+\begin{block}{LP \cite{BertB}}
+\begin{align*}
+\min_{J\in \R^|\S|} &c^\top J\\
+\text{s.t}\mb &J\geq T J
+\end{align*}
+\end{block}
+\input{cartoonlp}
+\begin{itemize}
+\item LP is in $|\S|$ variables $|\S||\A|$ constraints
+\item $c\geq 0 \in \R^{|\S|}$ is a non-negative vector
+\item Searches in the bag of {\color{orange}{superharmonic}} functions $J\geq TJ\geq T^2J\geq J^*$
+\item Complexity is $poly(|\S|,|\A|)$
+\end{itemize}
+\end{frame}
+
+
+
+
+
+\begin{frame}[fragile]{Approximate Linear Programming (ALP)}
+\begin{block}{ALP \cite{schweitzer1985generalized,de2003linear}}
+\begin{align*}
+\min_{r\in \R^k} &c^\top \Phi r\\
+\text{s.t}\mb &\Phi r\geq T \Phi r
+\end{align*}
+\end{block}
+\input{cartoonalp}
+\begin{itemize}
+\item ALP has $k$ variables $|\S||\A|$ constraints
+\item {\color{orange}{superharmonic}} functions {\color{orange}{restricted}} to span of $\Phi$
+\item ALP is feasible if $\one \in span(\Phi)$
+\item $\underbrace{\norm{J^*-\tj}_{1,c}}_{\text{Error in ALP}}\leq \frac{2}{1-\alpha}\underset{r\in \R^k}{\min}\underbrace{||J^*-\Phi r||_{\infty}}_{\text{Best in the basis}}$
+\end{itemize}
+\end{frame}
+
+\begin{comment}
+\begin{frame}[fragile]{Saliency of ALP}
+\begin{itemize}
+\item $\norm{J^*-\tj}_{1,c}$, can choose $c$ to control the error
+\item $\underbrace{\norm{J^*-\tj}_{1,c}}_{\text{Error in ALP}}\leq \frac{2}{1-\beta_\psi}\underset{r\in \R^k}{\min}\underbrace{||J^*-\Phi r||_{\infty,\psi}}_{\text{Best in the basis}}$
+\item \cite{de2003linear,de2004constraint} choose $\psi$ to be large in un-important parts of state space
+\end{itemize}
+
+\end{frame}
+\end{comment}
+
+\begin{frame}[fragile]{Proofs}
+\begin{block}{Feasibility}
+$\min\{ c^\top \Phi r | \Phi r\geq T \Phi r, r\in \R^k\}$
+\end{block}
+\cite{de2003linear} show that ALP is feasible if $\one$ is in the span of $\Phi$.
+\begin{block}{Proof}
+Let $\epsilon=\min_r \norm{J^*-\Phi r}_\infty=\norm{J^*-\Phi r^*}_\infty$
+\begin{align*}
+\norm{J^*-T (\Phi r^*)}_\infty=\alpha \epsilon\,\quad(\text{Contraction~of~}\,T)\\
+\Phi r^* \geq T \Phi r^* -(1+\alpha)\epsilon\,\quad(\text{translate~along~}\,\one)\\
+\Phi r^* + k\one\geq T \Phi r^* -(1+\alpha)\epsilon +\alpha k\one\,\quad(\text{pick}\,k=\frac{1+\alpha}{1-\alpha})\\
+\end{align*}
+\end{block}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Reduced Linear Program}
+\begin{block}{RLP \cite{de2004constraint}}
+\begin{align*}
+\min_{r\in \N\subset\R^k} &c^\top \Phi r\\
+\text{s.t}\mb &\Phi r (s)\geq g_a(s)+\alpha p_a(s,\cdot)^\top \Phi r,\,\forall s\in \I
+\end{align*}
+\input{cartoonrlp}
+\begin{itemize}
+\item $\N$ is chosen to ensure boundedness
+\item $\I$ is an index set of cardinality $m$ containing state-action pairs
+\item Not superharmonic (can be handled)
+\end{itemize}
+\end{block}
+\end{frame}
+\begin{frame}[fragile]{RLP: Details}
+\begin{block}{\cite{de2004constraint}}
+Under suitable conditions, for a small $\epsilon>0$
+\begin{align*}
+\norm{J^*-\hj}_{1,c}\leq \norm{J^*-\tj}_{1,c}+\epsilon\norm{J^*}_{1,c}
+\end{align*}
+\end{block}
+\begin{itemize}
+\item $\N$ contains $\tr$ (solution to ALP)
+\item Let $\mu^*=(1-\alpha)c^\top (I-\alpha P_{u^*})^{-1}$
+\item For a Lyapunov function $\psi$, define $\mu^*_{\psi}(s,a)=\frac{\mu^*(s)\psi(s)}{|\A|{\mu^*}^\top \psi}$
+\item Let $\theta=\frac{1+\beta_{\psi}}{2}\frac{{\mu^*}^\top \psi}{c^\top J^*}\sup_{r\in \N}\norm{J^*-\Phi r}_{\infty,\psi}$
+\item Result holds with probability $1-\delta$ for RLP with $m$ constraints sampled from $\mu^*_{\psi}$, when $m\geq \frac{16|\A|\theta}{(1-\alpha)\epsilon}\big(k\ln \frac{48|\A|\theta}{(1-\alpha)\epsilon}+\ln\frac{2}{\delta}\big)$
+\end{itemize}
+\end{frame}
+\begin{frame}[fragile]{Constraint Reduction- Gap in Theory}
+\begin{block}{\cite{de2004constraint}}
+\begin{itemize}
+\item No apriori way to choose $\N$
+\item For unbounded $\N$ the result is vacuous
+\item Sampling distribution depends on $u^*$
+\item Use of other sampling distribution will have importance sampling ratio
+\item Depends on combinatorial arguments (VC-dimension)
+\item \cite{farias2006tetris,de2003linear,de2004constraint} Empirical results good for variety of sampling distribution (no knowledge of $u^*$) on various domains (Tetris, Queues etc)
+\end{itemize}
+\end{block}
+\begin{block}{Gap}
+Theory does not explain empirical evidence
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Generalized Reduced Linear Program}
+\begin{block}{GRLP}
+\begin{align*}
+&{\min}_r \,\mb c^\top \Phi r\,,\\
+&\text{s.t.} \,\,\, W^\top  \Phi r\geq W^\top T \Phi r\,\\
+\end{align*}
+\end{block}
+\input{cartoonbasic}
+\begin{itemize}
+\item $W$ is a $m\times |\S||\A|$ matrix with non-negative entries
+\item LRALP is has $k$ variables $m$ constraints
+\item $W$ can encode sampling as well as linear projection of constraints
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Novel Contraction Operators}
+\begin{block}{Superharmonic Property}
+ALP as well as $\minp$ algebra
+\end{block}
+\begin{block}{Least Upper Bound $\Gamma$}
+\begin{align*}
+\begin{split}
+&r_c\eqdef\arg\min_{r} \,\, c^\top \Phi r\,,\\
+&\text{s.t.} \mb \Phi r\geq  TJ\,,\\
+&(\Gamma J)(s)\eqdef(\Phi r_{e_s,J})(s),\quad s=1,\ldots,|\S|\,.
+\end{split}
+\end{align*}
+\end{block}
+
+\begin{block}{Approximate Least Upper Bound $\hg$}
+\begin{align*}
+&\hat{r}_c={\arg\min}_r \,\mb c^\top \Phi r\,,\\
+&\text{s.t.} \,\,\, W^\top  \Phi r\geq W^\top TJ\,\\
+&(\hg J)(s)\eqdef(\Phi \hr_{e_s,J})(s),\, s=1,\ldots,|\S|\,.
+\end{align*}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Conic Structure}
+\begin{figure}
+\includegraphics[scale=0.25]{conic.png}
+\end{figure}
+\begin{block}{}
+\begin{itemize}
+\item $s_1,\ldots,s_m\in \S_0$ be $m$ retained constraints
+\item Let $\Phi(\S_0,\cdot)$ form a {\color{orange}{conic}} cover for $\Phi(\S,\cdot)$
+\item $\Phi(s,\cdot)=\sum_{s'\in \S}\Lambda(s,s')\Phi(s',\cdot)$
+\item For any $r\in \R^k$ {\color{orange}{$\Phi(s,\cdot) r<0$}} then {\color{orange}{$\exists s'\in \S_0$}} such that {\color{orange}{$\Phi(s',\cdot) r<0$}}
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Main Result - Prediction Error}
+
+\begin{block}{Prediction Error [Our Results, AAAI, 2015]}
+\begin{align*}
+\norm{J^*-\hj}_{1,c}\leq \frac{2}{1-\alpha}( 3\norm{J^*-\Phi r^*}_{\infty}+ \norm{\Gamma J^*-\hg J^*}_{\infty})
+\end{align*}
+\end{block}
+
+
+\begin{itemize}
+\item Error has two parts $i)$ Approximation Error $ii)$ Projection Error
+\item The bound is deterministic
+\item Factor $3$ is a proof artifact
+\item Does not depend on sampling
+\item Can be stated in $\norm{\cdot}_{\infty,\psi}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Main Result - Constraint Sampling}
+\begin{block}{Conic Conditions [Our Result, 2017]}
+Let $\S_0\subset \S$ such that the rows of $\Phi$ lies in the conic span of $\Phi(\S_0,\cdot)$ with co-efficient matrix $\Lambda$. Then
+\begin{align*}
+\norm{ \Gamma J^*-\hg J^* }_{\infty,\psi}\leq (3+\norm{\Lambda \psi}_{\infty,\psi})\inf_r\norm{J^*-\Phi r}_{
+\infty,\psi}
+\end{align*}
+\end{block}
+
+
+\begin{itemize}
+\item Geometric condition for linear programs
+\item Can ensure for variety of linear approximation such as tile coding, state aggregators, separable bases
+\item $|\S_0|$ is purely geometric requirement, unlike $m$ samples for RLP
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Properties of new operators}
+\begin{itemize}
+\item Define $\F_J\eqdef\{\Phi r | \Phi r\geq TJ \}$
+\item $\F_J$ contains all functions superharmonic with $TJ$
+\item {Monotonicity:} $\Gamma J_1\geq \Gamma J_2, \mb \forall$ $J_1\geq J_2$
+\item {Shift:} $\Gamma (J_1+k\one)= \Gamma J_1+ k\one$
+\item $\Gamma$ and $\hg$ are $L_{\infty,\psi}$ contraction maps
+\end{itemize}
+\input{schematic}
+\end{frame}
+
+
+\end{document}
