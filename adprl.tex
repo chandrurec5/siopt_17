@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[handout,10pt]{beamer}
 \setbeamertemplate{bibliography item}[triangle]
 
 \usetheme{metropolis}
@@ -61,37 +61,20 @@ Markov decision processes (MDPs) is useful to model these problems
 \end{frame}
 
 
-\begin{frame}[fragile]{Setup}
+\begin{frame}[fragile]{MDPs and Planning}
+\begin{block}{Setup}
 \begin{itemize}
-\item Discrete-Time, Discounted, Infinite Horizon MDPs
-\item Controller: steers the stochastically evolving state; receives rewards
-\item Policy: Controller using past state information
+\item MDP: Discrete-Time, Discounted, Infinite Horizon, Large scale
+\item Policy: Controller depends on past information
+\item Cheap per state computation are allowed
 \end{itemize}
+\end{block}
 \begin{block}{Planning Problem}
 \begin{itemize}
-\item Calculate actions of policies that give rise to high values
-\item New Error bounds on the quality of solutions obtained by solving linear programs of tractable size
+\item Compute actions of policy that leads to high values
+\item Optimal not realistic
+\item Best within a given class
 \end{itemize}
-\end{block}
-
-\end{frame}
-
-
-\begin{frame}[fragile]{Challenges}
-\begin{itemize}
-\item Model is given then computations are $poly(|\S|,|\A|)$
-\item $|\S|$ grows exponentially
-\item Hard even when fixed per-state calculations are allowed
-\item Modest Goal: Best from a suitable class
-\end{itemize}
-\begin{block}{Value Function approximation}
-\begin{itemize}
-\item Linear parameterization
-\item $\epsilon$ optimal value lead to $\epsilon$ optimal policy
-\end{itemize}
-\end{block}
-\begin{block}{Question}
-Can we bound value error?
 \end{block}
 
 \end{frame}
@@ -100,25 +83,23 @@ Can we bound value error?
 \begin{frame}[fragile]{Contributions}
 \begin{block}{Main Result}
 \begin{itemize}
-\item New sub-optimality bound for constraint reduction in approximate linear programming
+\item Linear constraint projection in approximate linear programming
+\item New Sub-Optimality Bound
 \item Recommendation for constraint selection
 \end{itemize}
 \end{block}
 \begin{block}{Key Ingredients}
 \begin{itemize}
-\item Based on `Geometric' Structure of linear programs
+\item \emph{Geometry} of linear program
 \item Novel Contraction maps
 \end{itemize}
 \end{block}
 \begin{block}{Prior Work}
-\begin{itemize}
-\item Suffers from distribution mismatch
-\end{itemize}
+Complementary work on constraint sampling
 \end{block}
-
 \end{frame}
 
-\section{Problem Setup}
+\section{MDPs and Linear Programming}
 
 \begin{frame}[fragile]{Markov Decision Process (MDP)}
 
@@ -126,48 +107,40 @@ Can we bound value error?
 \begin{itemize}
 \item State space $\S=\{s^1,\ldots,s^{|\S|}\}$\p
 \item Action space $\A=\{a^1,\ldots,a^{|\A|}\}$\p
-\item Markovian Transition
-\begin{align*}
-Pr\{s_{t+1}=s'| s_t=s, a_t=a\}=p_a(s,s')
-\end{align*}\p
+\item Markovian Transition $Pr\{s_{t+1}=s'| s_t=s, a_t=a\}=p_a(s,s')$ \p
 \item Rewards $g_a(s)$ for action $a$ in state $s$\p
-\item Policy: $u\colon \S\ra \A$ (induces a Markov chain with kernel $P_u$)\p
-\item Value: $J_u(s)\eqdef \E\big[\sum_{t=0}^\infty \alpha^t g_{a_t}(s_t)|s_0=s,a_t=u(s_t)\big],\,\alpha\in (0,1)$\p
 \end{itemize}
 \end{block}
-\begin{block}{Aim for optimal}
-Compute  $J^*(s)=\max_{u} J(s),\,\forall s\in \S$ and $u^*$ s.t $J_{u^*}=J^*$
+\begin{block}{}
+\begin{itemize}
+\item Policy: $u\colon \S\ra \A$ (induces a Markov chain with kernel $P_u$)\p
+\item Value: $J_u(s)\eqdef \E\big[\sum_{t=0}^\infty \alpha^t g_{a_t}(s_t)|s_0=s,a_t=u(s_t)\big],\,\alpha\in (0,1)$\p
+\item Bellman Operator $(TJ)(s)\eqdef\max_{a\in \A} g_a(s)+\alpha p_a(s,\cdot)^\top J$
+\end{itemize}
 \end{block}
 \end{frame}
 
-
-\begin{frame}[fragile]{Bellman Equation}
-
-\begin{block}{Bellman Equation}
+\begin{frame}[fragile]{Linear Programming}
+\begin{block}{LP \cite{BertB}}
 \begin{align*}
-J^*(s)&={\max_{a\in \A}} \alert<1>{g_a(s)}+{\alpha p_a(s,\cdot)^\top J^*}\\
+\min_{J\in \R^{|\S|}} &c^\top J\\
+\text{s.t}\mb &J\geq T J
 \end{align*}
 \end{block}
-\p
-\begin{block}{Values lead to Policy}
-\begin{align*}
-u^*(s)\eqdef \U(J^*)(s) ={\arg\max_{a\in \A}} (g_a(s)+\alpha p_a(s,\cdot)^\top J^*)
-\end{align*}
-\end{block}
-\normalsize
-\p
-\begin{block}{Bellman Operator- $T\colon \R^{|\S|}\ra \R^{|\S|}$}
-\begin{align*}
-(TJ)(s)&\eqdef\max_{a\in \A} g_a(s)+\alpha p_a(s,\cdot)^\top J\\
-J^*&=TJ^*
-\end{align*}
-\end{block}
+\input{cartoonlp}
+\begin{itemize}
+\item LP is in $|\S|$ variables $|\S||\A|$ constraints
+\item $c\geq 0 \in \R^{|\S|}$ is a non-negative vector
+%\item Searches in the bag of {\color{orange}{superharmonic}} functions $J\geq TJ\geq T^2J\geq J^*$
+\item Complexity is $poly(|\S|,|\A|)$
+\end{itemize}
 \end{frame}
 
 
+\begin{comment}
 \begin{frame}[fragile]{Definitions}
 \begin{block}{Norms}
-$\norm{\cdot}_{\infty,\psi}=\max_{s\in \S}\frac{(\cdot)(s) }{\psi(s)}$
+For $\psi>0\in \R^{|\S|}$, $\norm{\cdot}_{\infty,\psi}=\max_{s\in \S}\frac{(\cdot)(s) }{\psi(s)}$
 \end{block}
 
 
@@ -187,27 +160,11 @@ $\psi>0\in \R^{|\S|}$ then
 $\psi$ is a Lyapunov function if $\beta_\psi<1$
 \end{block}
 
-
 \end{frame}
+\end{comment}
 
 
 
-
-\begin{frame}[fragile]{Linear Programming}
-\begin{block}{LP \cite{BertB}}
-\begin{align*}
-\min_{J\in \R^|\S|} &c^\top J\\
-\text{s.t}\mb &J\geq T J
-\end{align*}
-\end{block}
-\input{cartoonlp}
-\begin{itemize}
-\item LP is in $|\S|$ variables $|\S||\A|$ constraints
-\item $c\geq 0 \in \R^{|\S|}$ is a non-negative vector
-\item Searches in the bag of {\color{orange}{superharmonic}} functions $J\geq TJ\geq T^2J\geq J^*$
-\item Complexity is $poly(|\S|,|\A|)$
-\end{itemize}
-\end{frame}
 
 
 
@@ -216,18 +173,47 @@ $\psi$ is a Lyapunov function if $\beta_\psi<1$
 \begin{frame}[fragile]{Approximate Linear Programming (ALP)}
 \begin{block}{ALP \cite{schweitzer1985generalized,de2003linear}}
 \begin{align*}
-\min_{r\in \R^k} &c^\top \Phi r\\
-\text{s.t}\mb &\Phi r\geq T \Phi r
+\min_{r\in \R^k} &c^\top \Phi r\,\quad{\color{orange}{\text{$k$ variables}}}\\
+\text{s.t}\mb &\Phi r\geq T \Phi r\,\quad{\color{orange}{\text{$|\S||\A|$ constraints}}}
 \end{align*}
 \end{block}
 \input{cartoonalp}
 \begin{itemize}
-\item ALP has $k$ variables $|\S||\A|$ constraints
-\item {\color{orange}{superharmonic}} functions {\color{orange}{restricted}} to span of $\Phi$
-\item ALP is feasible if $\one \in span(\Phi)$
+\item Substitute $J=\Phi r$ in LP
+\item $\Phi$ is a $|\S|\times k$ feature matrix, $r\in \R^k$ weight vector.
+%\item {\color{orange}{superharmonic}} functions {\color{orange}{restricted}} to span of $\Phi$
+%\item ALP is feasible if $\one \in span(\Phi)$
 \item $\underbrace{\norm{J^*-\tj}_{1,c}}_{\text{Error in ALP}}\leq \frac{2}{1-\alpha}\underset{r\in \R^k}{\min}\underbrace{||J^*-\Phi r||_{\infty}}_{\text{Best in the basis}}$
 \end{itemize}
+\begin{center}{\color{orange}{Need to reduce constraints}}\end{center}
 \end{frame}
+
+\begin{frame}[fragile]{Generalized Reduced Linear Program}
+\begin{block}{GRLP}
+\begin{align*}
+&{\min}_r \,\mb c^\top \Phi r\,\quad{\color{orange}{\text{$k$ variables}}}\\
+&\text{s.t.} \,\,\, W^\top  \Phi r\geq W^\top T \Phi r\,\quad{\color{orange}{\text{$m$ constraints}}}
+\end{align*}
+\end{block}
+\input{cartoonbasic}
+\begin{itemize}
+\item $W$ is a $m\times |\S||\A|$ matrix with non-negative entries
+\item {\color{orange}{$\norm{\hj-J^*}$??}}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Operators with useful Properties}
+\begin{block}{$M\colon \R^{|\S|}\ra\R^{|\S|}$}
+\begin{itemize}
+\item {Monotonicity:} $M J_1\geq M J_2, \mb \forall$ $J_1\geq J_2$
+\item {Shift:} $M (J+k\one)= M J+\gamma k\one$, $\gamma \in (0,1)$
+\item Monotonicity+Shift $\Rightarrow$ $M$ is $\gamma$ contraction in $L_\infty$ norm
+\end{itemize}
+\end{block}
+
+\end{frame}
+
 
 \begin{comment}
 \begin{frame}[fragile]{Saliency of ALP}
@@ -302,20 +288,7 @@ Theory does not explain empirical evidence
 \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Generalized Reduced Linear Program}
-\begin{block}{GRLP}
-\begin{align*}
-&{\min}_r \,\mb c^\top \Phi r\,,\\
-&\text{s.t.} \,\,\, W^\top  \Phi r\geq W^\top T \Phi r\,\\
-\end{align*}
-\end{block}
-\input{cartoonbasic}
-\begin{itemize}
-\item $W$ is a $m\times |\S||\A|$ matrix with non-negative entries
-\item LRALP is has $k$ variables $m$ constraints
-\item $W$ can encode sampling as well as linear projection of constraints
-\end{itemize}
-\end{frame}
+
 
 \begin{frame}[fragile]{Novel Contraction Operators}
 \begin{block}{Superharmonic Property}
