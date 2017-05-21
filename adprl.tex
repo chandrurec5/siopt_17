@@ -203,97 +203,7 @@ $\psi$ is a Lyapunov function if $\beta_\psi<1$
 \end{frame}
 
 
-\begin{frame}[fragile]{Operators with useful Properties}
-\begin{block}{$M\colon \R^{|\S|}\ra\R^{|\S|}$}
-\begin{itemize}
-\item {Monotonicity:} $M J_1\geq M J_2, \mb \forall$ $J_1\geq J_2$
-\item {Shift:} $M (J+k\one)= M J+\gamma k\one$, $\gamma \in (0,1)$
-\item Monotonicity+Shift $\Rightarrow$ $M$ is $\gamma$ contraction in $L_\infty$ norm
-\end{itemize}
-\end{block}
-
-\end{frame}
-
-
-\begin{comment}
-\begin{frame}[fragile]{Saliency of ALP}
-\begin{itemize}
-\item $\norm{J^*-\tj}_{1,c}$, can choose $c$ to control the error
-\item $\underbrace{\norm{J^*-\tj}_{1,c}}_{\text{Error in ALP}}\leq \frac{2}{1-\beta_\psi}\underset{r\in \R^k}{\min}\underbrace{||J^*-\Phi r||_{\infty,\psi}}_{\text{Best in the basis}}$
-\item \cite{de2003linear,de2004constraint} choose $\psi$ to be large in un-important parts of state space
-\end{itemize}
-
-\end{frame}
-\end{comment}
-
-\begin{frame}[fragile]{Proofs}
-\begin{block}{Feasibility}
-$\min\{ c^\top \Phi r | \Phi r\geq T \Phi r, r\in \R^k\}$
-\end{block}
-\cite{de2003linear} show that ALP is feasible if $\one$ is in the span of $\Phi$.
-\begin{block}{Proof}
-Let $\epsilon=\min_r \norm{J^*-\Phi r}_\infty=\norm{J^*-\Phi r^*}_\infty$
-\begin{align*}
-\norm{J^*-T (\Phi r^*)}_\infty=\alpha \epsilon\,\quad(\text{Contraction~of~}\,T)\\
-\Phi r^* \geq T \Phi r^* -(1+\alpha)\epsilon\,\quad(\text{translate~along~}\,\one)\\
-\Phi r^* + k\one\geq T \Phi r^* -(1+\alpha)\epsilon +\alpha k\one\,\quad(\text{pick}\,k=\frac{1+\alpha}{1-\alpha})\\
-\end{align*}
-\end{block}
-\end{frame}
-
-
-
-\begin{frame}[fragile]{Reduced Linear Program}
-\begin{block}{RLP \cite{de2004constraint}}
-\begin{align*}
-\min_{r\in \N\subset\R^k} &c^\top \Phi r\\
-\text{s.t}\mb &\Phi r (s)\geq g_a(s)+\alpha p_a(s,\cdot)^\top \Phi r,\,\forall s\in \I
-\end{align*}
-\input{cartoonrlp}
-\begin{itemize}
-\item $\N$ is chosen to ensure boundedness
-\item $\I$ is an index set of cardinality $m$ containing state-action pairs
-\item Not superharmonic (can be handled)
-\end{itemize}
-\end{block}
-\end{frame}
-\begin{frame}[fragile]{RLP: Details}
-\begin{block}{\cite{de2004constraint}}
-Under suitable conditions, for a small $\epsilon>0$
-\begin{align*}
-\norm{J^*-\hj}_{1,c}\leq \norm{J^*-\tj}_{1,c}+\epsilon\norm{J^*}_{1,c}
-\end{align*}
-\end{block}
-\begin{itemize}
-\item $\N$ contains $\tr$ (solution to ALP)
-\item Let $\mu^*=(1-\alpha)c^\top (I-\alpha P_{u^*})^{-1}$
-\item For a Lyapunov function $\psi$, define $\mu^*_{\psi}(s,a)=\frac{\mu^*(s)\psi(s)}{|\A|{\mu^*}^\top \psi}$
-\item Let $\theta=\frac{1+\beta_{\psi}}{2}\frac{{\mu^*}^\top \psi}{c^\top J^*}\sup_{r\in \N}\norm{J^*-\Phi r}_{\infty,\psi}$
-\item Result holds with probability $1-\delta$ for RLP with $m$ constraints sampled from $\mu^*_{\psi}$, when $m\geq \frac{16|\A|\theta}{(1-\alpha)\epsilon}\big(k\ln \frac{48|\A|\theta}{(1-\alpha)\epsilon}+\ln\frac{2}{\delta}\big)$
-\end{itemize}
-\end{frame}
-\begin{frame}[fragile]{Constraint Reduction- Gap in Theory}
-\begin{block}{\cite{de2004constraint}}
-\begin{itemize}
-\item No apriori way to choose $\N$
-\item For unbounded $\N$ the result is vacuous
-\item Sampling distribution depends on $u^*$
-\item Use of other sampling distribution will have importance sampling ratio
-\item Depends on combinatorial arguments (VC-dimension)
-\item \cite{farias2006tetris,de2003linear,de2004constraint} Empirical results good for variety of sampling distribution (no knowledge of $u^*$) on various domains (Tetris, Queues etc)
-\end{itemize}
-\end{block}
-\begin{block}{Gap}
-Theory does not explain empirical evidence
-\end{block}
-\end{frame}
-
-
-
 \begin{frame}[fragile]{Novel Contraction Operators}
-\begin{block}{Superharmonic Property}
-ALP as well as $\minp$ algebra
-\end{block}
 \begin{block}{Least Upper Bound $\Gamma$}
 \begin{align*}
 \begin{split}
@@ -314,6 +224,24 @@ ALP as well as $\minp$ algebra
 \end{frame}
 
 
+
+\begin{frame}[fragile]{Main Result - Prediction Error}
+
+\begin{block}{Prediction Error [Our Results, AAAI, 2015]}
+\begin{align*}
+\norm{J^*-\hj}_{1,c}\leq \frac{2}{1-\alpha}( 3\norm{J^*-\Phi r^*}_{\infty}+ \norm{\Gamma J^*-\hg J^*}_{\infty})
+\end{align*}
+\end{block}
+
+\begin{itemize}
+\item Approximation Error: $\norm{J^*-\Phi r^*}_{\infty}$ ( carry over ALP)
+\item Constraint Projection Error: $\norm{\Gamma J^*-\hg J^*}_{\infty}$ (new term)
+\item Can be stated in $\norm{\cdot}_{\infty,\psi}$
+\end{itemize}
+\end{frame}
+
+
+
 \begin{frame}[fragile]{Conic Structure}
 \begin{figure}
 \includegraphics[scale=0.25]{conic.png}
@@ -331,30 +259,13 @@ ALP as well as $\minp$ algebra
 
 
 
-\begin{frame}[fragile]{Main Result - Prediction Error}
-
-\begin{block}{Prediction Error [Our Results, AAAI, 2015]}
-\begin{align*}
-\norm{J^*-\hj}_{1,c}\leq \frac{2}{1-\alpha}( 3\norm{J^*-\Phi r^*}_{\infty}+ \norm{\Gamma J^*-\hg J^*}_{\infty})
-\end{align*}
-\end{block}
-
-
-\begin{itemize}
-\item Error has two parts $i)$ Approximation Error $ii)$ Projection Error
-\item The bound is deterministic
-\item Factor $3$ is a proof artifact
-\item Does not depend on sampling
-\item Can be stated in $\norm{\cdot}_{\infty,\psi}$
-\end{itemize}
-\end{frame}
 
 \begin{frame}[fragile]{Main Result - Constraint Sampling}
 \begin{block}{Conic Conditions [Our Result, 2017]}
 Let $\S_0\subset \S$ such that the rows of $\Phi$ lies in the conic span of $\Phi(\S_0,\cdot)$ with co-efficient matrix $\Lambda$. Then
 \begin{align*}
-\norm{ \Gamma J^*-\hg J^* }_{\infty,\psi}\leq (3+\norm{\Lambda \psi}_{\infty,\psi})\inf_r\norm{J^*-\Phi r}_{
-\infty,\psi}
+\norm{ \Gamma J^*-\hg J^* }_{\infty}\leq (3+\norm{\Lambda \psi}_{\infty})\inf_r\norm{J^*-\Phi r}_{
+\infty}
 \end{align*}
 \end{block}
 
@@ -362,7 +273,7 @@ Let $\S_0\subset \S$ such that the rows of $\Phi$ lies in the conic span of $\Ph
 \begin{itemize}
 \item Geometric condition for linear programs
 \item Can ensure for variety of linear approximation such as tile coding, state aggregators, separable bases
-\item $|\S_0|$ is purely geometric requirement, unlike $m$ samples for RLP
+%\item $|\S_0|$ is purely geometric requirement, unlike $m$ samples for RLP
 \end{itemize}
 \end{frame}
 
@@ -377,6 +288,183 @@ Let $\S_0\subset \S$ such that the rows of $\Phi$ lies in the conic span of $\Ph
 \end{itemize}
 \input{schematic}
 \end{frame}
+
+
+
+\begin{frame}[fragile]{Prior Work: Reduced Linear Program}
+\begin{block}{RLP \cite{de2004constraint}}
+\begin{align*}
+\min_{r\in \N\subset\R^k} &c^\top \Phi r\\
+\text{s.t}\mb &\Phi r (s)\geq g_a(s)+\alpha p_a(s,\cdot)^\top \Phi r,\,\forall s\in \I
+\end{align*}
+\input{cartoonrlp}
+\begin{itemize}
+\item $\N$ is chosen to ensure boundedness
+\item $\I$ is an index set of cardinality $m$ containing state-action pairs
+%\item Not superharmonic (can be handled)
+\end{itemize}
+\end{block}
+\end{frame}
+\begin{frame}[fragile]{Prior Work: RLP}
+\begin{block}{\cite{de2004constraint}}
+Under suitable conditions, for a small $\epsilon>0$
+\begin{align*}
+\norm{J^*-\hj}_{1,c}\leq \norm{J^*-\tj}_{1,c}+\epsilon\norm{J^*}_{1,c}
+\end{align*}
+\end{block}
+\begin{itemize}
+\item Bounding Set: $\N$ contains $\tr$ (solution to ALP)
+\item Sampling Distribution: $\mu^*\eqdef(1-\alpha)c^\top (I-\alpha P_{u^*})^{-1}$, $\mu^*(s,a)\eqdef\frac{\mu^*(s)}{|\A|}$
+\item Size of Set: $\theta=\frac{1+\beta_{\psi}}{2}\frac{{\mu^*}^\top \psi}{c^\top J^*}\sup_{r\in \N}\norm{J^*-\Phi r}_{\infty,\psi}$
+\item Union Bound: Holds w.p $1-\delta$,  $m\geq \frac{16|\A|\theta}{(1-\alpha)\epsilon}\big(k\ln \frac{48|\A|\theta}{(1-\alpha)\epsilon}+\ln\frac{2}{\delta}\big)$
+\end{itemize}
+\end{frame}
+\begin{frame}[fragile]{Prior Work:RLP}
+\begin{block}{\cite{de2004constraint}}
+\begin{itemize}
+\item No apriori way to choose $\N$
+\item For unbounded $\N$ the result is vacuous
+\item Sampling distribution depends on $u^*$
+\item Use of other sampling distribution will have importance sampling ratio
+\item Depends on combinatorial arguments (VC-dimension)
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Comparison of Results}
+\begin{table}
+\begin{tabular}{|c|c|}\hline
+RLP     &ALP\\ \hline
+Combinatorial   & Contraction of $T$ and Geomtery of LP \\ \hline
+$\N$,$\mu^*$ & Properties of $\Phi$ \\ \hline
+Error Probability $\downarrow$ as $m$ $\uparrow$ & $\Lambda$ $\downarrow$ as $m$ $\uparrow$
+\end{tabular}
+\end{table}
+\begin{block}{Possible Recommendation}
+Local lookahead planning
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Experiments}
+\begin{block}{Queuing system}
+\begin{itemize}
+\item  Buffer Size $|\S|-1$
+\item Arrival probability $p$ and service $0<q(1)<\ldots\leq q(A)<1$
+\item Reward $g_a(s)=-(s/N+q(a)^3)$ (penalize higher lengths and services)
+\end{itemize}
+\end{block}
+\begin{block}{Planning}
+\begin{itemize}
+\item Features: $(1,\ldots,\frac{s^k}{N^k})$
+\item Lookahead policy: At state $s$ run LP for $s$ and $s+1$
+\item Compare: Constraint Sampling vs Conic condition
+Lookahead sampling using
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Plots}
+\begin{block}{Parameters}
+\begin{itemize}
+\item $|\S|=1000$, $q=0.2,0.4,0.6,0.8$, $\alpha=1-\frac{1}{\S}$
+\item Conic Condition: $1,200,400,600,800,999$
+\item Constraint Sampling: Ideal Distribution and $c_{s'}(s)=(1-\alpha)(\alpha)^{|s'-s|}$
+\end{itemize}
+\end{block}
+\FloatBarrier
+\begin{figure}[htp]
+\begin{center}
+\begin{minipage}{0.9\textwidth}
+\resizebox{1.0\textwidth}{!}{
+\begin{tabular}{cc}
+\begin{tikzpicture}[scale=1,font=\normalsize,]
+\begin{axis}[legend style={at={(0.5,-0.2)}, anchor=north}]
+\addplot[smooth,red,very thick, mark=diamond, each nth point=100] plot file {./lralp_exp/V_LP};
+\addplot[dashed,blue,very thick, mark=+, each nth point=100] plot file {./lralp_exp/V_pol_CS};
+\addplot[dashed,green,very thick, mark=o, each nth point=100] plot file {./lralp_exp/V_pol_CS_ideal};
+\addplot[dotted,black,very thick,mark=square, each nth point=100] plot file {./lralp_exp/V_pol_cone};
+\addlegendentry{$J^*$};
+\addlegendentry{$J_{CS}$};
+\addlegendentry{$J_{CS-ideal}$};
+\addlegendentry{$J_{LRA}$};
+
+\end{axis}
+\end{tikzpicture}
+
+&
+\begin{tikzpicture}[scale=1,font=\normalsize]
+\begin{axis}[legend style={at={(0.5,-0.2)}, anchor=north}]
+\addplot[red,very thick] plot file {./lralp_exp/policy};
+\addplot[dashed,blue,very thick] plot file {./lralp_exp/policy_CS};
+\addplot[dashed,green, very thick, mark=+, each nth point=10] plot file {./lralp_exp/policy_CS_ideal};
+\addplot[dotted,black,very thick] plot file {./lralp_exp/policy_cone};
+\addlegendentry{$u^*$};
+\addlegendentry{$u_{CS}$};
+\addlegendentry{$u_{CS-ideal}$};
+\addlegendentry{$u_{LRA}$};
+
+\end{axis}
+\end{tikzpicture}
+
+\end{tabular}
+}
+\end{minipage}
+\end{center}
+\end{figure}
+\end{frame}
+
+\begin{comment}
+
+
+\begin{frame}[fragile]{Operators with useful Properties}
+\begin{block}{$M\colon \R^{|\S|}\ra\R^{|\S|}$}
+\begin{itemize}
+\item {Monotonicity:} $M J_1\geq M J_2, \mb \forall$ $J_1\geq J_2$
+\item {Shift:} $M (J+k\one)= M J+\gamma k\one$, $\gamma \in (0,1)$
+\item Monotonicity+Shift $\Rightarrow$ $M$ is $\gamma$ contraction in $L_\infty$ norm
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+
+\begin{comment}
+\begin{frame}[fragile]{Saliency of ALP}
+\begin{itemize}
+\item $\norm{J^*-\tj}_{1,c}$, can choose $c$ to control the error
+\item $\underbrace{\norm{J^*-\tj}_{1,c}}_{\text{Error in ALP}}\leq \frac{2}{1-\beta_\psi}\underset{r\in \R^k}{\min}\underbrace{||J^*-\Phi r||_{\infty,\psi}}_{\text{Best in the basis}}$
+\item \cite{de2003linear,de2004constraint} choose $\psi$ to be large in un-important parts of state space
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Proofs}
+\begin{block}{Feasibility}
+$\min\{ c^\top \Phi r | \Phi r\geq T \Phi r, r\in \R^k\}$
+\end{block}
+\cite{de2003linear} show that ALP is feasible if $\one$ is in the span of $\Phi$.
+\begin{block}{Proof}
+Let $\epsilon=\min_r \norm{J^*-\Phi r}_\infty=\norm{J^*-\Phi r^*}_\infty$
+\begin{align*}
+\norm{J^*-T (\Phi r^*)}_\infty=\alpha \epsilon\,\quad(\text{Contraction~of~}\,T)\\
+\Phi r^* \geq T \Phi r^* -(1+\alpha)\epsilon\,\quad(\text{translate~along~}\,\one)\\
+\Phi r^* + k\one\geq T \Phi r^* -(1+\alpha)\epsilon +\alpha k\one\,\quad(\text{pick}\,k=\frac{1+\alpha}{1-\alpha})\\
+\end{align*}
+\end{block}
+\end{frame}
+
+\end{comment}
+
+
+
+
+
+
+
+
+
 
 
 \end{document}
